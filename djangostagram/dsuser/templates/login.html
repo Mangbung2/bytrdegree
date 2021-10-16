@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block navbar %}
+  <!--NAV 바 시작-->
+  <nav class="navbar navbar-expand-lg navbar-default bg-Info">
+    <div class="container">
+      <a class="navbar-brand" href="/">djangostagram</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">타임라인
+            </a>
+          </li>
+  {% if request.session.user %}         
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">로그아웃</a>
+          </li>
+          <li class="nav-item">         
+            <a class="nav-link" href="{% url 'upload' %}">글작성</a> 
+          </li>          
+          <li class="nav-item">
+            <a class="nav-link" href="#"> Hello, { {{ request.session.user }} } </a>
+         </li>
+  {% else %}
+          <li class="nav-item">            
+             <a class="nav-link" href="{% url 'register' %}">회원가입</a> 
+          </li>
+          <li class="nav-item">            
+            <a class="nav-link list-group-item list-group-item-action active" href="{% url 'login' %}">로그인</a> 
+          </li>
+  {% endif %}
+        </ul>        
+      </div>
+    </div>
+  </nav>
+<!--NAV 바 끝-->
+{% endblock %}
+
+
+
+{% block contents %}
+<div class="row mt-5">
+  <div class="col-12 text-center">
+    <h1>로그인</h1>
+  </div>
+</div>
+<div class="row mt-5">
+  <div class="col-12">
+    {{ error }}
+  </div>
+</div>
+<div class="row mt-5">
+  <div class="col-12">
+    <form method="POST" action=".">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <input type="{{ field.field.widget.input_type }}" class="form-control" id="{{ field.id_for_label }}"
+          placeholder="{{ field.label }}" name="{{ field.name }}" />
+      </div>
+      {% if field.errors %}
+      <span style="color: red">{{ field.errors }}</span>
+      {% endif %}
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">로그인</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

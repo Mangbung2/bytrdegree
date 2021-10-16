@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block navbar %}
+  <!--NAV 바 시작-->
+  <nav class="navbar navbar-expand-lg navbar-default bg-Info">
+    <div class="container">
+      <a class="navbar-brand" href="/">djangostagram</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active  list-group-item list-group-item-action active" href="/">타임라인
+            </a>
+          </li>
+  {% if request.session.user %}         
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">로그아웃</a>
+          </li>
+          <li class="nav-item">         
+            <a class="nav-link" href="{% url 'upload' %}">글작성</a> 
+          </li>          
+          <li class="nav-item">
+            <a class="nav-link" href="#"> Hello, { {{ request.session.user }} } </a>
+         </li>
+  {% else %}
+          <li class="nav-item">            
+             <a class="nav-link" href="{% url 'register' %}">회원가입</a> 
+          </li>
+          <li class="nav-item">            
+            <a class="nav-link" href="{% url 'login' %}">로그인</a> 
+          </li>
+  {% endif %}
+        </ul>        
+      </div>
+    </div>
+  </nav>
+<!--NAV 바 끝-->
+{% endblock %}
+{% block contents %}
+<!--제목, 사진, 작성자, 작성일순으로 표시하기-->
+<div class="card-group" style="margin-top: 50px;">
+{% for post in object_list %}
+    <div class="card" style="max-width: 20rem; padding : 10px">
+      <div class="card-header">제목 : {{ post.title }}</div>
+        <div class="card-body">
+          <p class="card-text">사진</p>
+          <a href="{% url 'post' pk=post.pk %}">
+            <img src="{{ post.image_address }}" class="card-img-top" alt="..." width=200px height=200px >
+          </a>
+          <h5 class="card-title">작성자 : {{ post.writer }}</h5>
+          <p class="card-text">내용 : {{ post.contents }}</p>
+          <p class="card-text">작성일 : <small class="text-muted">{{ post.registered_dttm | date:"Y-m-d"}}</small></p>
+            <label for="disabledTextInput" class="form-label">태그</label>
+            <input class="form-control" type="text" value="{{ post.tags.all|join:", " }}" aria-label="Disabled input example" disabled readonly>
+        </div>
+        <a href="{% url 'post' pk=post.pk %}" class="text-center">
+          <button type="submit" class="btn btn-primary">상세보기</button>  
+        </a>
+    </div>
+{% endfor %}
+</div>
+<!-- pagenation -->
+<div class="row mt-5">
+    <div class="col-12">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{page_obj.previous_page_number}}">이전으로</a>
+        </li>  
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link disabled" href="#">이전으로</a>
+        </li>
+        {% endif %}
+        <li class="page-item active">
+          <a class="page-link" href="#">{{page_obj.number}}/{{page_obj.paginator.num_pages}}</a>
+        </li>
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{page_obj.next_page_number}}">다음으로</a>
+        </li> 
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="#">다음으로</a>
+        </li>  
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}
